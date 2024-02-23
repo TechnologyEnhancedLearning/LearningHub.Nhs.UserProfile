@@ -1,0 +1,13 @@
+﻿@inject Microsoft.Extensions.Options.IOptions<LearningHub.Nhs.UserProfileUI.Configuration.WebSettings> webSettings
+
+<footer role="contentinfo">
+    <div class="nhsuk-footer" id="nhsuk-footer">
+        <div class="nhsuk-width-container nhsuk-footer__container app-width-container">
+            <h2 class="nhsuk-u-visually-hidden">Support links</h2>
+            <ul class="nhsuk-footer__list">
+                <li class="nhsuk-footer__list-item"><a class="nhsuk-footer__list-item-link" href="@(webSettings.Value.SupportUrls.SupportSite)">Help</a></li>
+            </ul>
+            <p class="nhsuk-footer__copyright">&copy; NHS England 2023</p>
+        </div>
+    </div>
+</footer>

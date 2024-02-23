@@ -1,0 +1,40 @@
+﻿@model IEnumerable<LearningHub.Nhs.LearningCredentials.Models.Dsp.VerifiableCredentialResponse>
+
+@{
+    ViewData["Title"] = "List Credentials";
+}
+
+<div class="nhsuk-width-container app-width-container nhsuk-u-padding-bottom-9">
+    <h1>Available Credentials</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CredentialName)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CredentialName)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Send credential", "SendCredential", new { id=item.Id }) |
+                        @Html.ActionLink("List credentials", "ListUserCredentials", new { id=item.Id })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

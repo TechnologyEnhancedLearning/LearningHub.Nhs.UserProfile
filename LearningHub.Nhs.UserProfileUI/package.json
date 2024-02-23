@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "scripts": {
+    "build": "npm run sass -- --quiet",
+    "watch": "npm run sass -- --watch",
+    "sass": "sass Styles:wwwroot/css --quiet-deps --style=compressed"
+  },
+  "dependencies": {
+    "nhsuk-frontend": "^7.0.0"
+  },
+  "devDependencies": {
+    "css-loader": "^6.8.1",
+    "sass": "^1.64.2",
+    "sass-loader": "^13.3.2",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

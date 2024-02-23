@@ -1,0 +1,17 @@
+﻿
+@function px2rem($pixels) {
+    $remValue: ($pixels / 16) + rem;
+    @return $remValue;
+}
+
+.nhsuk-grid-column--desktop-text-align-right {
+    padding-left: 2.5rem;
+}
+
+/* desktop */
+@media (min-width: px2rem(768)) {
+    .nhsuk-grid-column--desktop-text-align-right {
+        text-align: right;
+        padding-left: 0;
+    }
+}
