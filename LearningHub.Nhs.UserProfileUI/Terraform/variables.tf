@@ -7,8 +7,3 @@ variable "ResourceGroupLocation" {
     type        = string
     default     = "uksouth"  
 }
-
-variable "sql_admin_password" {
-    type      = string
-	sensitive = true
-}
