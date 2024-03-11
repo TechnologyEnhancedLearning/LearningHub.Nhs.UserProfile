@@ -1,0 +1,124 @@
+name: Deploy LearningCredentials to Dev
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+  
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploylearningcredentials:
+    runs-on: windows-latest
+    environment: dev
+
+    name: 'Deploy LearningCredentials'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false  # Skip wrapper script installation
+
+      - name: 'Terraform init'
+        id: init
+        run: |
+          cd LearningHub.Nhs.LearningCredentials.Api/Terraform
+          terraform init
+
+      #- name: 'Terraform destroy'
+      #  id: destroy
+      #  run: |
+      #    cd LearningHub.Nhs.LearningCredentials.Api/Terraform
+      #    terraform destroy -auto-approve
+
+      - name: 'Terraform apply'
+        id: apply
+        run: |
+          cd LearningHub.Nhs.LearningCredentials.Api/Terraform
+          terraform apply -auto-approve
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Add Nuget source
+        run: dotnet nuget add source 'https://pkgs.dev.azure.com/e-LfH/_packaging/LearningHubFeed/nuget/v3/index.json' --name 'LearningHubFeed'  --username 'colin.beeby' --password ${{ secrets.AZURE_DEVOPS_PAT }} --store-password-in-clear-text      
+      
+
+      - name: Perform variable substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: '**/appsettings.json'
+        env:
+          Environment: 'Development'
+          ConnectionStrings.NLogDb: ${{ secrets.NLOG_DB }}
+          ConnectionStrings.LearningHubRedis: ${{ secrets.LEARNING_HUB_REDIS }}
+          WebSettings.BuildNumber: ${{ vars.WEB_SETTINGS_BUILD_NUMBER }}
+          WebSettings.UserProfileUrl: ${{ vars.WEB_SETTINGS_USER_PROFILE_URL }}
+          WebSettings.LearningCredentialsApiUrl: ${{ vars.WEB_SETTINGS_LEARNING_CREDENTIALS_API_URL }}
+          WebSettings.UserApiUrl: ${{ vars.WEB_SETTINGS_USER_API_URL }}
+          WebSettings.AuthenticationServiceUrl: ${{ vars.AUTH_SERVICE_URL }}
+          WebSettings.AuthClientSecret: ${{ secrets.WEB_SETTINGS_AUTH_CLIENT_SECRET }}
+          WebSettings.AuthClientId: ${{ vars.WEB_SETTINGS_AUTH_CLIENT_ID }}
+          WebSettings.DspSettings.HEEOrgIdentifier: ${{ secerts.WEB_SETTINGS_DSP_SETTINGS_HEE_ORG_IDENTIFIER }}
+          WebSettings.DspSettings.DspGatewayUrl: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_DSP_GATEWAY_URL }}
+          WebSettings.DspSettings.ClientId: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_CLIENT_ID }}
+          WebSettings.DspSettings.ClientSecret: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_CLIENT_SECRET }}
+          WebSettings.DspSettings.SigningKey: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_SIGNING_KEY }}
+
+      #- name: Use Node 12.19 with Yarn
+      #  uses: actions/setup-node@v4
+      #  with:
+      #    node-version: '14'
+      #    npm: '6.14.8'
+
+      #- name: Typescript install WebUI
+      #  run: yarn install --network-timeout 600000 --frozen-lockfile
+      #  working-directory: ./LearningHub.Nhs.WebUI
+
+      #- name: Typescript build WebUI
+      #  run: yarn build:webpack
+      #  working-directory: ./LearningHub.Nhs.WebUI     
+      
+      #- name: Typescript install AdminUI
+      #  run: yarn install 
+      #  working-directory: ./AdminUI/LearningHub.Nhs.AdminUI
+
+      #- name: Typescript build AdminUI
+      #  run: yarn build:webpack
+      #  working-directory: ./AdminUI/LearningHub.Nhs.AdminUI     
+
+      - name: dotnet build and publish
+        run: |
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet publish -c Release -o ./myapp
+
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: learninghub-userprofile-app
+          package: ./myapp
+
+      - name: logout
+        run: |
+          az logout
