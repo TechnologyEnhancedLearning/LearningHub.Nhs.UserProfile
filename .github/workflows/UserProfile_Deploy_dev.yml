@@ -79,7 +79,7 @@ jobs:
           WebSettings.AuthenticationServiceUrl: ${{ vars.AUTH_SERVICE_URL }}
           WebSettings.AuthClientSecret: ${{ secrets.WEB_SETTINGS_AUTH_CLIENT_SECRET }}
           WebSettings.AuthClientId: ${{ vars.WEB_SETTINGS_AUTH_CLIENT_ID }}
-          WebSettings.DspSettings.HEEOrgIdentifier: ${{ secerts.WEB_SETTINGS_DSP_SETTINGS_HEE_ORG_IDENTIFIER }}
+          WebSettings.DspSettings.HEEOrgIdentifier: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_HEE_ORG_IDENTIFIER }}
           WebSettings.DspSettings.DspGatewayUrl: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_DSP_GATEWAY_URL }}
           WebSettings.DspSettings.ClientId: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_CLIENT_ID }}
           WebSettings.DspSettings.ClientSecret: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_CLIENT_SECRET }}
