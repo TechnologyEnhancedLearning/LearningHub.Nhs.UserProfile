@@ -39,7 +39,7 @@ jobs:
       - name: 'Terraform init'
         id: init
         run: |
-          cd LearningHub.Nhs.LearningCredentials.Api/Terraform
+          cd LearningHub.Nhs.UserProfile/Terraform
           terraform init
 
       #- name: 'Terraform destroy'
@@ -51,7 +51,7 @@ jobs:
       - name: 'Terraform apply'
         id: apply
         run: |
-          cd LearningHub.Nhs.LearningCredentials.Api/Terraform
+          cd LearningHub.Nhs.UserProfile/Terraform
           terraform apply -auto-approve
 
       - name: Setup .NET Core
