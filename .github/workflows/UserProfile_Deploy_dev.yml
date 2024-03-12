@@ -1,4 +1,4 @@
-name: Deploy LearningCredentials to Dev
+name: Deploy UserProfile to Dev
 on:
   push:
     branches:
@@ -45,7 +45,7 @@ jobs:
       - name: 'Terraform destroy'
         id: destroy
         run: |
-         cd LearningHub.Nhs.LearningCredentials.Api/Terraform
+         cd LearningHub.Nhs.UserProfileUI/Terraform
          terraform destroy -auto-approve
 
       #- name: 'Terraform apply'
