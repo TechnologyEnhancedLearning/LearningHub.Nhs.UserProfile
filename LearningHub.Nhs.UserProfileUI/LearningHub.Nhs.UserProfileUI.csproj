@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LearningHub.Nhs.LearningCredentials\LearningCredentials.Nhs.Models\LearningHub.Nhs.LearningCredentials.Models.csproj" />
+    <ProjectReference Include="..\LearningCredentials.Nhs.Models\LearningHub.Nhs.LearningCredentials.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
