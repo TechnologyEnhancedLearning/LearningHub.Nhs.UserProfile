@@ -14,7 +14,7 @@ jobs:
     runs-on: windows-latest
     environment: dev
 
-    name: 'Deploy LearningCredentials'
+    name: 'Deploy UserProfile'
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -42,17 +42,17 @@ jobs:
           cd LearningHub.Nhs.UserProfileUI/Terraform
           terraform init
 
-      - name: 'Terraform destroy'
-        id: destroy
-        run: |
-         cd LearningHub.Nhs.UserProfileUI/Terraform
-         terraform destroy -auto-approve
-
-      #- name: 'Terraform apply'
-      #  id: apply
+      #- name: 'Terraform destroy'
+      #  id: destroy
       #  run: |
-      #    cd LearningHub.Nhs.UserProfileUI/Terraform
-      #    terraform apply -auto-approve
+      #   cd LearningHub.Nhs.UserProfileUI/Terraform
+      #   terraform destroy -auto-approve
+
+      - name: 'Terraform apply'
+        id: apply
+        run: |
+          cd LearningHub.Nhs.UserProfileUI/Terraform
+          terraform apply -auto-approve
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -117,6 +117,7 @@ jobs:
         with: 
           app-name: learninghub-userprofile-app
           package: ./myapp
+          virtual-application: /userprofile
 
       - name: logout
         run: |
