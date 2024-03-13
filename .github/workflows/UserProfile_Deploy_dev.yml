@@ -117,7 +117,7 @@ jobs:
         with: 
           app-name: learninghub-userprofile-app
           package: ./myapp
-          target-path: site\userprofile
+          target-path: site/userprofile
 
       - name: logout
         run: |
