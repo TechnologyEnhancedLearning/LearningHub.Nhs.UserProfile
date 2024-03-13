@@ -7,7 +7,6 @@
     <UserSecretsId>aspnet-LearningHub.Nhs.UserProfileUI-ecbc162b-9abb-4895-a2ab-933364df0021</UserSecretsId>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Platforms>x64</Platforms>
-	  <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <ItemGroup>
