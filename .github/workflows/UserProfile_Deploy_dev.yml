@@ -117,7 +117,7 @@ jobs:
         with: 
           app-name: uks-LearningHubNhsUk-WebUI-Dev
           package: ./myapp
-          target-path: /home/site/wwwroot/userprofile
+          target-path: userprofile
 
       - name: logout
         run: |
