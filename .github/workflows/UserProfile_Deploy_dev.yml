@@ -113,11 +113,11 @@ jobs:
           dotnet publish -c Release -o ./myapp
 
       - name: 'Run Azure webapp deploy action using publish profile credentials'
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with: 
           app-name: learninghub-userprofile-app
           package: ./myapp
-          target-path: /site/userprofile
+          target-path: site\userprofile
 
       - name: logout
         run: |
