@@ -17,6 +17,7 @@
     <PackageReference Include="elfhHub.Nhs.Models" Version="2.0.5" />
     <PackageReference Include="IdentityModel" Version="4.4.0" />
     <PackageReference Include="LearningHub.Nhs.Caching" Version="2.0.0" />
+    <PackageReference Include="LearningHub.Nhs.LearningCredentials.Models" Version="1.0.1" />
     <PackageReference Include="LearningHub.Nhs.Models" Version="2.1.16" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.12" />
@@ -30,10 +31,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\LearningCredentials.Nhs.Models\LearningHub.Nhs.LearningCredentials.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
