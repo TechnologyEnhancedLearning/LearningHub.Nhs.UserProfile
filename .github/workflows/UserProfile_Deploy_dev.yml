@@ -115,7 +115,7 @@ jobs:
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: azure/webapps-deploy@v3
         with: 
-          app-name: uks-LearningHubNhsUk-WebUI-Dev
+          app-name: learninghub-userprofile-app
           package: ./myapp
           target-path: /home/site/wwwroot/userprofile
 
