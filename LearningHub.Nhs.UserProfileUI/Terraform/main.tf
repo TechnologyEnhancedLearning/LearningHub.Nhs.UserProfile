@@ -1,3 +1,11 @@
+resource "azurerm_dns_cname_record" "UserProfileDNSRecord" {
+  name                = var.DNSRecordName
+  resource_group_name = var.DNSZoneResourceGroupName
+  zone_name           = var.DNSZoneName
+  ttl                 = 3600
+  record              = var.DNSRecordValue
+}
+
 resource "azurerm_resource_group" "UserProfileResourceGroup" {
     name        = "UserProfileRG"
     location    = "uksouth"

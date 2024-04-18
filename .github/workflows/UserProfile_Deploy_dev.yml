@@ -52,7 +52,7 @@ jobs:
         id: apply
         run: |
           cd LearningHub.Nhs.UserProfileUI/Terraform
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var="DNSRecordName=${{ vars.DNS_RECORD_NAME }}" -var="DNSZoneResourceGroupName=${{ vars.DNS_ZONE_RESOURCE_GROUP_NAME }}" -var="DNSZoneName=${{ vars.DNS_ZONE_NAME }}" -var="DNSRecordValue=${{ vars.DNS_RECORD_VALUE}}"
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
