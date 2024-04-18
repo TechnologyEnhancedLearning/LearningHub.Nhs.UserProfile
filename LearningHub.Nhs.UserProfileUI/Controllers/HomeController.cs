@@ -14,7 +14,7 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
     /// <summary>
     /// Defines the <see cref="HomeController" />.
     /// </summary>
-    [Authorize]
+    // [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> logger;

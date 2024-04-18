@@ -12,7 +12,7 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
     /// <summary>
     /// Defines the <see cref="DigitalStaffPassportController" />.
     /// </summary>
-    // [Authorize]
+    [Authorize]
     public class DigitalStaffPassportController : BaseController
     {
         private readonly ILogger<DigitalStaffPassportController> logger;
