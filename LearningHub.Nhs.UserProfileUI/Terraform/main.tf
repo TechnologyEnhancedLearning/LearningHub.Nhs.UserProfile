@@ -14,11 +14,6 @@ resource "azurerm_public_ip" "pip" {
   sku                 = "Standard"
 }
 
-data "azurerm_key_vault_secret" "uk_learninghub_kv" {
-  name                = "test-learninghub-nhs-org"
-  key_vault_id        = "/subscriptions/66516f71-f3d4-4911-b900-c6e4690a5b15/resourceGroups/UKS-ELFH-DEVLEARNINGHUBNHSUK-RG/providers/Microsoft.KeyVault/vaults/UKS-DEVLEARNINGHUB-KV"
-}
-
 resource "azurerm_resource_group" "UserProfileResourceGroup" {
     name        = "UserProfileRG"
     location    = "uksouth"
