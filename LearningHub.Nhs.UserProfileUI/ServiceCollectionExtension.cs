@@ -160,7 +160,8 @@ namespace LearningHub.Nhs.UserProfileUI
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.Scope.Add("userapi");
-                    options.Scope.Add("learningcredentialsapi");
+
+                    // options.Scope.Add("learningcredentialsapi");
                     options.Scope.Add("offline_access"); // Enables refresh token even though Auth Service session has expired
                     options.Scope.Add("roles");
                     options.SaveTokens = true;
@@ -175,6 +176,11 @@ namespace LearningHub.Nhs.UserProfileUI
                         await Task.CompletedTask;
                     };
 
+                    options.Events.OnRedirectToIdentityProvider = context =>
+                    {
+                        context.ProtocolMessage.RedirectUri = webSettings.UserProfileUrl + '/' + context.ProtocolMessage.RedirectUri.Split('/').Last();
+                        return Task.CompletedTask;
+                    };
                     options.ClaimActions.MapUniqueJsonKey("role", "role");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
