@@ -1,8 +1,8 @@
-name: Deploy UserProfile to Dev
+name: Deploy UserProfile to Test
 on:
   push:
     branches:
-      - dev
+      - test
   workflow_dispatch:
   
 permissions:
@@ -12,7 +12,7 @@ permissions:
 jobs:
   deploylearningcredentials:
     runs-on: windows-latest
-    environment: dev
+    environment: test
 
     name: 'Deploy UserProfile'
     env:
@@ -40,7 +40,7 @@ jobs:
         id: init
         run: |
           cd LearningHub.Nhs.UserProfileUI/Terraform
-          terraform init "-backend-config=backend-dev.tfvars"
+          terraform init "-backend-config=backend-test.tfvars"
 
       # - name: 'Terraform destroy'
       #   id: destroy

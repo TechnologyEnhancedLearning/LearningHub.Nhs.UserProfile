@@ -1,8 +1,8 @@
-name: Deploy UserProfile to Dev
+name: Deploy UserProfile to Prod
 on:
   push:
     branches:
-      - dev
+      - prod
   workflow_dispatch:
   
 permissions:
@@ -12,7 +12,7 @@ permissions:
 jobs:
   deploylearningcredentials:
     runs-on: windows-latest
-    environment: dev
+    environment: prod
 
     name: 'Deploy UserProfile'
     env:
@@ -40,7 +40,7 @@ jobs:
         id: init
         run: |
           cd LearningHub.Nhs.UserProfileUI/Terraform
-          terraform init "-backend-config=backend-dev.tfvars"
+          terraform init "-backend-config=backend-prod.tfvars"
 
       # - name: 'Terraform destroy'
       #   id: destroy

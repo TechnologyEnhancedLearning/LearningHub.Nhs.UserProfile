@@ -1,26 +1,10 @@
-resource "azurerm_dns_cname_record" "UserProfileDNSRecord" {
-  name                = var.DNSRecordName
-  resource_group_name = var.DNSZoneResourceGroupName
-  zone_name           = var.DNSZoneName
-  ttl                 = 3600
-  record              = var.DNSRecordValue
-}
-
-resource "azurerm_public_ip" "pip" {
-  name                = "UKS-ELFH-DEV-AG03-PIP"
-  resource_group_name = "UKS-ELFH-APPGW-RG"
-  location            = "uksouth"
-  allocation_method   = "Static"
-  sku                 = "Standard"
-}
-
 resource "azurerm_resource_group" "UserProfileResourceGroup" {
-    name        = "UserProfileRG"
-    location    = "uksouth"
+    name        = var.ResourceGroupName
+    location    = var.ResourceGroupLocation
 }
 
 resource "azurerm_service_plan" "UserProfileServicePlan" {
-  name                = "learninghub-userprofile-app-service-plan"
+  name                = var.AppServicePlanName
   location            = azurerm_resource_group.UserProfileResourceGroup.location
   resource_group_name = azurerm_resource_group.UserProfileResourceGroup.name
   sku_name			  = "B1"
@@ -28,7 +12,7 @@ resource "azurerm_service_plan" "UserProfileServicePlan" {
 }
 
 resource "azurerm_linux_web_app" "UserProfileLinuxWebApp" {
-  name                = "learninghub-userprofile-app"
+  name                = var.WebAppName
   location            = azurerm_resource_group.UserProfileResourceGroup.location
   resource_group_name = azurerm_resource_group.UserProfileResourceGroup.name
   service_plan_id     = azurerm_service_plan.UserProfileServicePlan.id
