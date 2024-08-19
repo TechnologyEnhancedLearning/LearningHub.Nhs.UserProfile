@@ -16,10 +16,5 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         /// Gets the current user id.
         /// </summary>
         protected int CurrentUserId => this.User.Identity.GetCurrentUserId();
-
-        /// <summary>
-        /// Gets the dsp identity .
-        /// </summary>
-        protected string DspIdentity => $"DspIdentity:{this.CurrentUserId}";
     }
 }

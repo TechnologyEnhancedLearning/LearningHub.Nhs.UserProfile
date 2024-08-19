@@ -42,7 +42,6 @@ namespace LearningHub.Nhs.UserProfileUI.Filters
             if (user.Identity.IsAuthenticated)
             {
                 var loginProcessCacheKey = $"{user.Identity.GetCurrentUserId()}:LoginProcess";
-                var dspIdentityCacheKey = $"DspIdentity:{user.Identity.GetCurrentUserId()}";
 
                 var (cacheExists, result) = await this.cacheService.TryGetAsync<string>(loginProcessCacheKey);
 
@@ -51,12 +50,6 @@ namespace LearningHub.Nhs.UserProfileUI.Filters
                     var userId = user.Identity.GetCurrentUserId();
                     await this.userSessionHelper.StartSession(userId);
                     await this.cacheService.RemoveAsync(loginProcessCacheKey);
-
-                    var (dspExists, dspResult) = await this.cacheService.TryGetAsync<string>(dspIdentityCacheKey);
-                    if (dspExists)
-                    {
-                        await this.cacheService.RemoveAsync(dspIdentityCacheKey);
-                    }
                 }
             }
 
