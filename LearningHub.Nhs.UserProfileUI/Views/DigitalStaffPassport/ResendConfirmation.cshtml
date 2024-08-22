@@ -14,13 +14,13 @@
     </div>
     <dl class="nhsuk-summary-list">
         <div class="nhsuk-summary-list__row">
-            <dt class="nhsuk-summary-list__key">
+            <dt class="nhsuk-summary-list__key no-bottom-border">
             <form asp-controller="DigitalStaffPassport" asp-action="ConfirmCredential" method="get">
                 @Html.Hidden("id", UserVerifiableCredentialId)
                     <button type="submit" class="nhsuk-button nhsuk-u-margin-bottom-0 nhsuk-u-margin-right-3">Confirm</button>
                 </form>
             </dt>
-            <dd class="nhsuk-summary-list__value">
+            <dd class="nhsuk-summary-list__value no-bottom-border">
                <a asp-action="Credentials" class="nhsuk-button nhsuk-button--secondary nhsuk-u-margin-bottom-0 nhsuk-u-padding-right-3">Cancel</a>
             </dd>
         </div>

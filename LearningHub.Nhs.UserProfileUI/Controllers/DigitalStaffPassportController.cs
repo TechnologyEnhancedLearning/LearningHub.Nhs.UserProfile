@@ -164,7 +164,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             if (code == null)
             {
                 return this.RedirectToAction("Credentials");
-                ////return this.RedirectToAction("ListCredentials");
             }
 
             if (state == "credentialCreation")
@@ -174,9 +173,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             else if (state == "verifyCreation")
             {
                 return await this.PersistIdentityVerification(code);
-
-                // var claims = await this.digitalStaffPassportService.GetCredentialDetails(code);
-                // return this.View("ShowCredentialClaims", claims);
             }
             else
             {
@@ -193,8 +189,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         public async Task<IActionResult> Revoke(int id)
         {
             await this.digitalStaffPassportService.RevokeUserVerifiableCredentials(id);
-
-            // TODO - return to main summary page after testing is complete
             return this.RedirectToAction("ListUserCredentials", new { id = id });
         }
 

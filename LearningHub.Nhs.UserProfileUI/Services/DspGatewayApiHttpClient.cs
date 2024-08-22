@@ -58,7 +58,6 @@ namespace LearningHub.Nhs.UserProfileUI.Services
         {
             this.httpClient.BaseAddress = new Uri(this.webSettings.DspSettings.DspGatewayUrl);
             this.httpClient.DefaultRequestHeaders.Accept.Clear();
-            ////this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
         }
     }

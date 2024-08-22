@@ -289,13 +289,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             claims.Add($"{verifiableCredential.ClaimPrefix}-Verifier", "NHS England TEL");
             claims.Add($"{verifiableCredential.ClaimPrefix}-VerificationMethod", "elearning completion");
             claims.Add($"{verifiableCredential.ClaimPrefix}-LastRefresh", DateTimeOffset.Now.ToString("o"));
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-TrustIdentifier", "notset");
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-Employer", "notset");
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-ProficiencyLevel", "notset");
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-Pedigree", "notset");
 
-            // TODO - this hard-coded value needs to be picked up from the user's specific identity value
-           // claims.Add("UniqueIdentifier", "3ed5a980-3a1b-45a0-9c50-6a58127cb19f");
             claims.Add("UniqueIdentifier", dspResult);
 
             return claims;
