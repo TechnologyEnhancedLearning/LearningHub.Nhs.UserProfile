@@ -7,7 +7,7 @@ resource "azurerm_service_plan" "UserProfileServicePlan" {
   name                = var.AppServicePlanName
   location            = azurerm_resource_group.UserProfileResourceGroup.location
   resource_group_name = azurerm_resource_group.UserProfileResourceGroup.name
-  sku_name			  = "B1"
+  sku_name			  = "B3"
   os_type			  = "Linux"
 }
 
