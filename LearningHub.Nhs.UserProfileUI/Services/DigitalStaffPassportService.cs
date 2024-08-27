@@ -21,6 +21,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
     using LearningHub.Nhs.UserProfileUI.Helper;
     using LearningHub.Nhs.UserProfileUI.Interfaces;
     using LearningHub.Nhs.UserProfileUI.Models;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
@@ -67,7 +68,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
                 AttainmentStatus = userClientSystemCredential.AttainmentStatus,
             };
 
-            var claims = this.PopulateCertificateClaims(verifiableCredential, userClientSystemCredential);
+            var claims = await this.PopulateCertificateClaimsAsync(verifiableCredential, userClientSystemCredential, currentUserId);
 
             DspAuthorisationResponse dspAuthorisationResponse = await this.CreateCredential(verifiableCredential, claims);
             string fullRedirectUrl = string.Format("{0}/{1}", this.webSettings.DspSettings.DspGatewayUrl.TrimEnd('/'), this.webSettings.DspSettings.AuthorisationRedirectUrl.TrimStart('/'));
@@ -262,12 +263,14 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             }
         }
 
-        private Dictionary<string, string> PopulateCertificateClaims(VerifiableCredentialResponse verifiableCredential, ClientSystemCredentialResult clientSystemCredentialResult)
+        private async Task<Dictionary<string, string>> PopulateCertificateClaimsAsync(VerifiableCredentialResponse verifiableCredential, ClientSystemCredentialResult clientSystemCredentialResult, int currentUserId)
         {
             var claims = new Dictionary<string, string>();
 
             var dateAwarded = clientSystemCredentialResult.ActivityDate;
             var toDate = dateAwarded.AddYears(verifiableCredential.PeriodQty);
+            var dspIdentityCacheKey = $"DspIdentity:{currentUserId}";
+            var dspResult = await this.cacheService.GetAsync<string>(dspIdentityCacheKey);
 
             claims.Add($"{verifiableCredential.ClaimPrefix}-StatMandSubject", verifiableCredential.CredentialName);
             claims.Add($"{verifiableCredential.ClaimPrefix}-Level", verifiableCredential.Level.ToString());
@@ -286,13 +289,8 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             claims.Add($"{verifiableCredential.ClaimPrefix}-Verifier", "NHS England TEL");
             claims.Add($"{verifiableCredential.ClaimPrefix}-VerificationMethod", "elearning completion");
             claims.Add($"{verifiableCredential.ClaimPrefix}-LastRefresh", DateTimeOffset.Now.ToString("o"));
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-TrustIdentifier", "notset");
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-Employer", "notset");
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-ProficiencyLevel", "notset");
-            ////claims.Add($"{verifiableCredential.ClaimPrefix}-Pedigree", "notset");
 
-            // TODO - this hard-coded value needs to be picked up from the user's specific identity value
-            claims.Add("UniqueIdentifier", "3ed5a980-3a1b-45a0-9c50-6a58127cb19f");
+            claims.Add("UniqueIdentifier", dspResult);
 
             return claims;
         }
