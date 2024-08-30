@@ -5,6 +5,7 @@
 namespace LearningHub.Nhs.UserProfileUI.Controllers
 {
     using LearningHub.Nhs.Caching;
+    using LearningHub.Nhs.LearningCredentials.Models.Dsp;
     using LearningHub.Nhs.LearningCredentials.Models.Entities.Dsp;
     using LearningHub.Nhs.Models.Entities.Hierarchy;
     using LearningHub.Nhs.UserProfileUI.Interfaces;
@@ -37,6 +38,15 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             this.digitalStaffPassportService = digitalStaffPassportService;
             this.userService = userService;
             this.cacheService = cacheService;
+        }
+
+        /// <summary>
+        /// The Index.
+        /// </summary>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        public IActionResult Index()
+        {
+            return this.RedirectToAction("Credentials", "DigitalStaffPassport");
         }
 
         /// <summary>
@@ -124,10 +134,19 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         /// <returns>The <see cref="IActionResult"/>.</returns>
         public async Task<IActionResult> ConfirmCredential(int id)
         {
-            var userVerifiableCredential = await this.digitalStaffPassportService.GetUserVerifiableCredentialById(id);
-            var verifiableCredential = await this.digitalStaffPassportService.GetVerifiableCredentialById(userVerifiableCredential.VerifiableCredentialId);
-            userVerifiableCredential.ExpiryDate = userVerifiableCredential.ActivityDate.AddYears(verifiableCredential.PeriodQty);
-            userVerifiableCredential.RenewalPeriodText = verifiableCredential.PeriodQty.ToString() + " " + verifiableCredential.PeriodUnit.ToString().ToLower() + (verifiableCredential.PeriodQty > 1 ? "s" : string.Empty);
+            var verifiableCredential = await this.digitalStaffPassportService.GetVerifiableCredentialById(id);
+            var userClientSystemCredential = await this.digitalStaffPassportService.GetClientSystemCredentialForCurrentUser(id);
+
+            var userVerifiableCredential = new UserVerifiableCredentialResponse()
+            {
+                VerifiableCredentialId = id,
+                CredentialName = verifiableCredential.CredentialName,
+                ActivityDate = userClientSystemCredential.ActivityDate,
+                ExpiryDate = userClientSystemCredential.ActivityDate.AddYears(verifiableCredential.PeriodQty),
+                RenewalPeriodText = verifiableCredential.PeriodQty.ToString() + " " + verifiableCredential.PeriodUnit.ToString().ToLower() + (verifiableCredential.PeriodQty > 1 ? "s" : string.Empty),
+                AttainmentStatus = userClientSystemCredential.AttainmentStatus,
+            };
+
             return this.View(userVerifiableCredential);
         }
 
@@ -248,12 +267,11 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
                     if (uniqueIdentifier != null)
                     {
                         await this.cacheService.SetAsync(this.DspIdentity, uniqueIdentifier.Value);
-                        this.TempData["Notification"] = "Identity Verification Successful";
                     }
                 }
                 else
                 {
-                    this.TempData["Notification"] = "Invalid Identity Verification";
+                    this.TempData["Notification"] = "Identity Verification Failed";
                 }
             }
 

@@ -37,18 +37,8 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         /// <returns>The <see cref="IActionResult"/>.</returns>
         public IActionResult Index()
         {
-            return this.View();
+            return this.RedirectToAction("Credentials", "DigitalStaffPassport");
         }
-
-        /////// <summary>
-        /////// The TestCredential.
-        /////// </summary>
-        /////// <returns>The <see cref="IActionResult"/>.</returns>
-        ////public async Task<IActionResult> TestCredential()
-        ////{
-        ////    var url = await this.digitalStaffPassportService.GetAuthUrl();
-        ////    return this.Redirect(url);
-        ////}
 
         /// <summary>
         /// The Error.
