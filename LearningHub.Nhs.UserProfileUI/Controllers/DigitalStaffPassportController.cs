@@ -4,6 +4,7 @@
 
 namespace LearningHub.Nhs.UserProfileUI.Controllers
 {
+    using System;
     using LearningHub.Nhs.Caching;
     using LearningHub.Nhs.LearningCredentials.Models.Dsp;
     using LearningHub.Nhs.LearningCredentials.Models.Entities.Dsp;
@@ -158,8 +159,17 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         [HttpPost]
         public async Task<IActionResult> SendCredential(int verifiableCredentialId)
         {
-            var url = await this.digitalStaffPassportService.GetAuthUrl(verifiableCredentialId, this.CurrentUserId);
-            return this.Redirect(url);
+            try
+            {
+                var url = await this.digitalStaffPassportService.GetAuthUrl(verifiableCredentialId, this.CurrentUserId);
+                return this.Redirect(url);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                this.ViewBag.Error = ex.Message;
+                return this.View("DspError");
+            }
         }
 
         /// <summary>
