@@ -317,7 +317,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
                            + "&response_mode=query"
                            + $"&nonce={noncevalue}";
 
-            this.logger.LogError(payload);
+            this.logger.LogError("queryString", payload);
             HttpClient client = new HttpClient();
             string url = this.webSettings.DspSettings.DspGatewayUrl + this.webSettings.DspSettings.AuthorisationRequestUrl;
 
@@ -325,7 +325,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             try
             {
                 var dataPayload = await stringContent.ReadAsStringAsync();
-                this.logger.LogError(dataPayload);
+                this.logger.LogError("payload", dataPayload);
             }
             catch (Exception)
             {
@@ -347,6 +347,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             }
             else
             {
+                this.logger.LogError(response.ReasonPhrase, response);
                 throw new Exception("save failed!");
             }
         }
