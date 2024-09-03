@@ -4,9 +4,20 @@
 
 #pragma warning disable SA1200 // Using directives should be placed correctly
 using LearningHub.Nhs.UserProfileUI;
+using LearningHub.Nhs.UserProfileUI.Middleware;
+using NLog;
+using NLog.Web;
 #pragma warning restore SA1200 // Using directives should be placed correctly
 
+var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
+logger.Debug("Log Started");
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+builder.Host.UseNLog();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -37,6 +48,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<NLogMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
