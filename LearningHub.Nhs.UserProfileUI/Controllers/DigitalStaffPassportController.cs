@@ -13,6 +13,7 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
+    using System;
 
     /// <summary>
     /// Defines the <see cref="DigitalStaffPassportController" />.
@@ -158,8 +159,16 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         [HttpPost]
         public async Task<IActionResult> SendCredential(int verifiableCredentialId)
         {
-            var url = await this.digitalStaffPassportService.GetAuthUrl(verifiableCredentialId, this.CurrentUserId);
-            return this.Redirect(url);
+            try
+            {
+                var url = await this.digitalStaffPassportService.GetAuthUrl(verifiableCredentialId, this.CurrentUserId);
+                return this.Redirect(url);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return this.View("DspError");
+            }
         }
 
         /// <summary>
