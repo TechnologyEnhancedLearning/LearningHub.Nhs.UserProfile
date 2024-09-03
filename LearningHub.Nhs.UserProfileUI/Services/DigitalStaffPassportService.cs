@@ -35,6 +35,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
         private readonly IDspGatewayApiHttpClient dspGatewayApiHttpClient;
         private readonly ICacheService cacheService;
         private readonly WebSettings webSettings;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DigitalStaffPassportService"/> class.
@@ -43,16 +44,19 @@ namespace LearningHub.Nhs.UserProfileUI.Services
         /// <param name="dspGatewayApiHttpClient">The dspGatewayApiHttpClient<see cref="IDspGatewayApiHttpClient"/>.</param>
         /// <param name="cacheService">The CacheService <see cref="ICacheService"/>.</param>
         /// <param name="webSettings">The webSettings <see cref="WebSettings"/>.</param>
+        /// <param name="logger">The logger.</param>
         public DigitalStaffPassportService(
             ILearningCredentialsApiFacade lcApiFacade,
             IDspGatewayApiHttpClient dspGatewayApiHttpClient,
             ICacheService cacheService,
-            IOptions<WebSettings> webSettings)
+            IOptions<WebSettings> webSettings,
+            ILogger<DigitalStaffPassportService> logger)
         {
             this.lcApiFacade = lcApiFacade;
             this.cacheService = cacheService;
             this.dspGatewayApiHttpClient = dspGatewayApiHttpClient;
             this.webSettings = webSettings.Value;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -69,7 +73,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             };
 
             var claims = await this.PopulateCertificateClaimsAsync(verifiableCredential, userClientSystemCredential, currentUserId);
-
+            this.logger.LogError(claims.ToString());
             DspAuthorisationResponse dspAuthorisationResponse = await this.CreateCredential(verifiableCredential, claims);
             string fullRedirectUrl = string.Format("{0}/{1}", this.webSettings.DspSettings.DspGatewayUrl.TrimEnd('/'), this.webSettings.DspSettings.AuthorisationRedirectUrl.TrimStart('/'));
 
@@ -313,10 +317,19 @@ namespace LearningHub.Nhs.UserProfileUI.Services
                            + "&response_mode=query"
                            + $"&nonce={noncevalue}";
 
+            this.logger.LogError("queryString", payload);
             HttpClient client = new HttpClient();
             string url = this.webSettings.DspSettings.DspGatewayUrl + this.webSettings.DspSettings.AuthorisationRequestUrl;
 
             StringContent stringContent = new StringContent(payload, Encoding.UTF8, "application/x-www-form-urlencoded");
+            try
+            {
+                var dataPayload = await stringContent.ReadAsStringAsync();
+                this.logger.LogError("payload", dataPayload);
+            }
+            catch (Exception)
+            {
+            }
 
             var response = await client.PostAsync(url, stringContent).ConfigureAwait(false);
 
@@ -334,6 +347,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             }
             else
             {
+                this.logger.LogError(response.ReasonPhrase, response);
                 throw new Exception("save failed!");
             }
         }
