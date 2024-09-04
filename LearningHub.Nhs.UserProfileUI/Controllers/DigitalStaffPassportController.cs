@@ -164,9 +164,8 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
                 var url = await this.digitalStaffPassportService.GetAuthUrl(verifiableCredentialId, this.CurrentUserId);
                 return this.Redirect(url);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                this.logger.LogError($"Error sending credential id {verifiableCredentialId}-{ex.Message}");
                 this.ViewBag.Error = "Error sending credential";
                 return this.View("DspError");
             }
