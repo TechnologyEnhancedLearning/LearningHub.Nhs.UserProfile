@@ -166,7 +166,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
                 this.ViewBag.Error = ex.Message;
                 return this.View("DspError");
             }

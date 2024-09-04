@@ -73,7 +73,6 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             };
 
             var claims = await this.PopulateCertificateClaimsAsync(verifiableCredential, userClientSystemCredential, currentUserId);
-            this.logger.LogError(claims.ToString());
             DspAuthorisationResponse dspAuthorisationResponse = await this.CreateCredential(verifiableCredential, claims);
             string fullRedirectUrl = string.Format("{0}/{1}", this.webSettings.DspSettings.DspGatewayUrl.TrimEnd('/'), this.webSettings.DspSettings.AuthorisationRedirectUrl.TrimStart('/'));
 
@@ -317,19 +316,9 @@ namespace LearningHub.Nhs.UserProfileUI.Services
                            + "&response_mode=query"
                            + $"&nonce={noncevalue}";
 
-            this.logger.LogError("queryString", payload);
             HttpClient client = new HttpClient();
             string url = this.webSettings.DspSettings.DspGatewayUrl + this.webSettings.DspSettings.AuthorisationRequestUrl;
-
             StringContent stringContent = new StringContent(payload, Encoding.UTF8, "application/x-www-form-urlencoded");
-            try
-            {
-                var dataPayload = await stringContent.ReadAsStringAsync();
-                this.logger.LogError("payload", dataPayload);
-            }
-            catch (Exception)
-            {
-            }
 
             var response = await client.PostAsync(url, stringContent).ConfigureAwait(false);
 
@@ -347,7 +336,8 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             }
             else
             {
-                this.logger.LogError(response.ReasonPhrase, response);
+                var dataPayload = await stringContent.ReadAsStringAsync();
+                this.logger.LogError($"{response.ReasonPhrase}-{dataPayload}");
                 throw new Exception("save failed!");
             }
         }
