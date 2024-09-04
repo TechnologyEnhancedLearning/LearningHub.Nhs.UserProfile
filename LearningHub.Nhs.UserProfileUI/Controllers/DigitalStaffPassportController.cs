@@ -166,8 +166,8 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
-                this.ViewBag.Error = ex.Message;
+                this.logger.LogError($"Error sending credential id {verifiableCredentialId}-{ex.Message}");
+                this.ViewBag.Error = "Error sending credential";
                 return this.View("DspError");
             }
         }

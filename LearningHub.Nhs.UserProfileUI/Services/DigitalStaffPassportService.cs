@@ -73,8 +73,6 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             };
 
             var claims = await this.PopulateCertificateClaimsAsync(verifiableCredential, userClientSystemCredential, currentUserId);
-            var entry = string.Join(", ", claims.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
-            this.logger.LogError($"claims-{entry}");
             DspAuthorisationResponse dspAuthorisationResponse = await this.CreateCredential(verifiableCredential, claims);
             string fullRedirectUrl = string.Format("{0}/{1}", this.webSettings.DspSettings.DspGatewayUrl.TrimEnd('/'), this.webSettings.DspSettings.AuthorisationRedirectUrl.TrimStart('/'));
 
@@ -318,19 +316,9 @@ namespace LearningHub.Nhs.UserProfileUI.Services
                            + "&response_mode=query"
                            + $"&nonce={noncevalue}";
 
-            this.logger.LogError($"queryString--{payload}");
             HttpClient client = new HttpClient();
             string url = this.webSettings.DspSettings.DspGatewayUrl + this.webSettings.DspSettings.AuthorisationRequestUrl;
-            this.logger.LogError($"url--{url}");
             StringContent stringContent = new StringContent(payload, Encoding.UTF8, "application/x-www-form-urlencoded");
-            try
-            {
-                var dataPayload = await stringContent.ReadAsStringAsync();
-                this.logger.LogError($"payload-{dataPayload}");
-            }
-            catch (Exception)
-            {
-            }
 
             var response = await client.PostAsync(url, stringContent).ConfigureAwait(false);
 
@@ -348,7 +336,8 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             }
             else
             {
-                this.logger.LogError(response.ReasonPhrase);
+                var dataPayload = await stringContent.ReadAsStringAsync();
+                this.logger.LogError($"{response.ReasonPhrase}-{dataPayload}");
                 throw new Exception("save failed!");
             }
         }
@@ -406,7 +395,6 @@ namespace LearningHub.Nhs.UserProfileUI.Services
         private string GenerateToken(Dictionary<string, string> credential)
         {
             var mySecurityKey = new SymmetricSecurityKey(Convert.FromBase64String(this.webSettings.DspSettings.SigningKey));
-            this.logger.LogError($"SigningKey-{this.webSettings.DspSettings.SigningKey}");
             var tokenHandler = new JwtSecurityTokenHandler();
             var claimidentity = new ClaimsIdentity();
             foreach (var claim in credential)
