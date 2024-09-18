@@ -277,11 +277,12 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
                     if (uniqueIdentifier != null)
                     {
                         await this.cacheService.SetAsync(this.DspIdentity, uniqueIdentifier.Value);
+                        this.TempData["Notification"] = "Identity verified";
                     }
                 }
                 else
                 {
-                    this.TempData["Notification"] = "Identity Verification Failed";
+                    this.TempData["Notification"] = "Identity verification failed";
                 }
             }
 
