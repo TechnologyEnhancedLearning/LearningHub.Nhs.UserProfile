@@ -186,8 +186,8 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             if (error != null || error_description != null)
             {
                 this.logger.LogError($"Error: {error}/rDescription: {error_description}");
-                this.ViewBag.Error = $"Error: {error}: {error_description}";
-                return this.View("DspError");
+                this.TempData["Notification"] = $"Error: {error}: {error_description}";
+                return this.RedirectToAction("Credentials");
             }
 
             if (code == null)
