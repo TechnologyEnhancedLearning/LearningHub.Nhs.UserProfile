@@ -257,6 +257,19 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         private async Task<IActionResult> RequestToken(string code)
         {
             var userVerifiableCredential = await this.digitalStaffPassportService.ProcessTokenResponse(code, this.CurrentUserId);
+            if (userVerifiableCredential != null && userVerifiableCredential.UserVerifiableCredentialId > 0)
+            {
+                var userVerifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentialsById(userVerifiableCredential.VerifiableCredentialId);
+                if (userVerifiableCredentials != null)
+                {
+                    string message = userVerifiableCredentials.Count() > 1
+                        ? "Credential readded to wallet"
+                        : "Credential added to wallet";
+
+                    this.TempData["Notification"] = $"Success: {message}";
+                }
+            }
+
             return this.RedirectToAction("Credentials");
         }
 
@@ -276,11 +289,12 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
                     if (uniqueIdentifier != null)
                     {
                         await this.cacheService.SetAsync(this.DspIdentity, uniqueIdentifier.Value);
+                        this.TempData["Notification"] = "Success: Identity verified";
                     }
                 }
                 else
                 {
-                    this.TempData["Notification"] = "Identity Verification Failed";
+                    this.TempData["Notification"] = "Identity verification failed";
                 }
             }
 
