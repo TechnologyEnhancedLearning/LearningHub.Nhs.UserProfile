@@ -77,27 +77,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         }
 
         /// <summary>
-        /// Displays the verifiable credentials.
-        /// </summary>
-        /// <param name="id">Verifiable credential id.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        public async Task<IActionResult> ListUserCredentials(int id)
-        {
-            // TODO - Remove once thisis no longer redirected to
-            var verifiableCredential = await this.digitalStaffPassportService.GetVerifiableCredentialById(id);
-            var userVerifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentialsById(id);
-
-            var model = new UserVerifiableCredentialModel()
-            {
-                Id = verifiableCredential.Id,
-                CredentialName = verifiableCredential.CredentialName,
-                UserVerifiableCredentials = userVerifiableCredentials,
-            };
-
-            return this.View(model);
-        }
-
-        /// <summary>
         /// Displays the user's verifiable credentials.
         /// </summary>
         /// <returns>The <see cref="IActionResult"/>.</returns>
@@ -151,7 +130,7 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             if (error != null || error_description != null)
             {
                 this.logger.LogError($"Error: {error}/rDescription: {error_description}");
-                this.TempData["Notification"] = $"Error: {error}: {error_description}";
+                this.TempData["Notification"] = $"{error_description}";
                 return this.RedirectToAction("Credentials");
             }
 
@@ -172,18 +151,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             {
                 return this.View("Error");
             }
-        }
-
-        /// <summary>
-        /// Revokes a credential.
-        /// </summary>
-        /// <param name="id">The User Verifiable Credential id.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        [HttpGet]
-        public async Task<IActionResult> Revoke(int id)
-        {
-            await this.digitalStaffPassportService.RevokeUserVerifiableCredentials(id);
-            return this.RedirectToAction("ListUserCredentials", new { id = id });
         }
 
         /// <summary>
