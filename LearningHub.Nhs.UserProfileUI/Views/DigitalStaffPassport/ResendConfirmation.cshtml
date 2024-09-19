@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Resend Confirmation";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var verifiableCredentialId = Context.Request.Query["id"];
+    int verifiableCredentialId = ViewBag.CredentialId;
 }
 
 <div class="nhsuk-width-container app-width-container nhsuk-u-padding-bottom-9">
@@ -16,7 +16,7 @@
         <div class="nhsuk-summary-list__row">
             <dt class="nhsuk-summary-list__key no-bottom-border">
             <form asp-controller="DigitalStaffPassport" asp-action="SendCredential" method="post">
-                 @Html.Hidden("verifiableCredentialId", verifiableCredentialId)
+                <input type="hidden" name="verifiableCredentialId" value="@verifiableCredentialId" />
                 <button type="submit" class="nhsuk-button nhsuk-u-margin-bottom-0 nhsuk-u-margin-right-3">Confirm</button>
             </form>
             </dt>

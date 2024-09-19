@@ -89,10 +89,11 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         /// <summary>
         /// Displays a resend confirmation screen.
         /// </summary>
-        /// <param name="id">The verifiable credial id.</param>
+        /// <param name="id">The verifiable credential id.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
         public IActionResult ResendConfirmation(int id)
         {
+            this.ViewBag.CredentialId = id;
             return this.View();
         }
 
