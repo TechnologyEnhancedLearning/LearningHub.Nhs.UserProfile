@@ -108,17 +108,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         }
 
         /// <summary>
-        /// Displays a single user verifiable credential.
-        /// </summary>
-        /// <param name="id">The verifiable credial id.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        public async Task<IActionResult> Details(int id)
-        {
-            var verifiableCredential = await this.digitalStaffPassportService.GetUserVerifiableCredentialById(id);
-            return this.View(verifiableCredential);
-        }
-
-        /// <summary>
         /// Displays a resend confirmation screen.
         /// </summary>
         /// <param name="id">The verifiable credial id.</param>
@@ -126,29 +115,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         public IActionResult ResendConfirmation(int id)
         {
             return this.View();
-        }
-
-        /// <summary>
-        /// The Confirm Credential method.
-        /// </summary>
-        /// <param name="id">The verifiable credial id.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        public async Task<IActionResult> ConfirmCredential(int id)
-        {
-            var verifiableCredential = await this.digitalStaffPassportService.GetVerifiableCredentialById(id);
-            var userClientSystemCredential = await this.digitalStaffPassportService.GetClientSystemCredentialForCurrentUser(id);
-
-            var userVerifiableCredential = new UserVerifiableCredentialResponse()
-            {
-                VerifiableCredentialId = id,
-                CredentialName = verifiableCredential.CredentialName,
-                ActivityDate = userClientSystemCredential.ActivityDate,
-                ExpiryDate = userClientSystemCredential.ActivityDate.AddYears(verifiableCredential.PeriodQty),
-                RenewalPeriodText = verifiableCredential.PeriodQty.ToString() + " " + verifiableCredential.PeriodUnit.ToString().ToLower() + (verifiableCredential.PeriodQty > 1 ? "s" : string.Empty),
-                AttainmentStatus = userClientSystemCredential.AttainmentStatus,
-            };
-
-            return this.View(userVerifiableCredential);
         }
 
         /// <summary>
