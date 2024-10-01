@@ -30,6 +30,7 @@ namespace LearningHub.Nhs.LearningCredentials.Models.Automapper
             this.CreateMap<Entities.Dsp.UserVerifiableCredential, UserVerifiableCredentialResponse>()
                 .ForMember(d => d.UserVerifiableCredentialId, x => x.MapFrom(s => s.Id))
                 .ForMember(d => d.CredentialName, x => x.MapFrom(s => s.VerifiableCredential.CredentialName))
+                .ForMember(d => d.Level, x => x.MapFrom(s => s.VerifiableCredential.Level))
                 .ForMember(d => d.Status, x => x.MapFrom(s => (UserVerifiableCredentialStatusEnum)s.UserVerifiableCredentialStatusId));
             this.CreateMap<UserVerifiableCredentialRequest, Entities.Dsp.UserVerifiableCredential>()
                 .ForMember(d => d.UserVerifiableCredentialStatusId, x => x.MapFrom(s => (int)s.Status))

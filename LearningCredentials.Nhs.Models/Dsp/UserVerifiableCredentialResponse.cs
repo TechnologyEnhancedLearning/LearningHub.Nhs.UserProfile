@@ -29,6 +29,11 @@ namespace LearningHub.Nhs.LearningCredentials.Models.Dsp
         public int ClientSystemCredentialId { get; set; }
 
         /// <summary>
+        /// Gets or sets the credential level.
+        /// </summary>
+        public int Level { get; set; }
+
+        /// <summary>
         /// Gets or sets the display status.
         /// </summary>
         [DisplayName("Status")]
