@@ -212,8 +212,8 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
                 {
                     var credentialNameWithLevel = this.UpdateCredentialNameWithLevel(userVerifiableCredential.CredentialName, userVerifiableCredential.Level);
                     string message = userVerifiableCredentials.Count() > 1
-                        ? $"{credentialNameWithLevel} readded to wallet"
-                        : $"{credentialNameWithLevel} added to wallet";
+                        ? $"{credentialNameWithLevel} credential readded to wallet"
+                        : $"{credentialNameWithLevel} credential added to wallet";
 
                     this.TempData["Notification"] = $"Success: {message}";
                 }
