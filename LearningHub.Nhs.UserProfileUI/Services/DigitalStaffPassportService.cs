@@ -10,6 +10,7 @@ namespace LearningHub.Nhs.UserProfileUI.Services
     using System.Net.Http;
     using System.Security.Claims;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using LearningHub.Nhs.Caching;
     using LearningHub.Nhs.LearningCredentials.Models.Dsp;
@@ -227,6 +228,26 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             }
         }
 
+        private static string GetCredentialSubject(string input)
+        {
+            int dashIndex = input.IndexOf('-');
+            if (dashIndex >= 0)
+            {
+                return input.Substring(0, dashIndex).Trim();
+            }
+            else
+            {
+                return input;
+            }
+        }
+
+        private static string GetCredentialName(string input)
+        {
+            string result = input.Replace("-", string.Empty);
+            result = Regex.Replace(result, @"\s+", " ").Trim();
+            return result;
+        }
+
         private async Task<bool> RevokeVerifiableCredential(UserVerifiableCredentialResponse userVerifiableCredential)
         {
             var verifiableCredential = await this.GetVerifiableCredentialById(userVerifiableCredential.VerifiableCredentialId);
@@ -275,11 +296,11 @@ namespace LearningHub.Nhs.UserProfileUI.Services
             var dspIdentityCacheKey = $"DspIdentity:{currentUserId}";
             var dspResult = await this.cacheService.GetAsync<string>(dspIdentityCacheKey);
 
-            claims.Add($"{verifiableCredential.ClaimPrefix}-StatMandSubject", verifiableCredential.CredentialName);
+            claims.Add($"{verifiableCredential.ClaimPrefix}-StatMandSubject", GetCredentialSubject(verifiableCredential.CredentialName));
             claims.Add($"{verifiableCredential.ClaimPrefix}-Level", verifiableCredential.Level.ToString());
             claims.Add($"{verifiableCredential.ClaimPrefix}-AttainmentStatus", clientSystemCredentialResult.AttainmentStatus);
             claims.Add($"{verifiableCredential.ClaimPrefix}-CompetencyFramework", "CSTF");
-            claims.Add($"{verifiableCredential.ClaimPrefix}-CompetencyName", verifiableCredential.CredentialName);
+            claims.Add($"{verifiableCredential.ClaimPrefix}-CompetencyName", GetCredentialName(verifiableCredential.CredentialName));
             claims.Add($"{verifiableCredential.ClaimPrefix}-LastDateAwarded", dateAwarded.ToString("o"));
             claims.Add($"{verifiableCredential.ClaimPrefix}-RenewalPeriod", verifiableCredential.PeriodQty.ToString());
             claims.Add($"{verifiableCredential.ClaimPrefix}-Units", verifiableCredential.PeriodUnit.ToString());
