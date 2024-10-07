@@ -197,8 +197,8 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
 
             int dashIndex = input.IndexOf('-');
             string modifiedInput = dashIndex >= 0
-                ? input.Insert(dashIndex, $" -Level {level}")
-                : $"{input} -Level {level}";
+                ? input.Insert(dashIndex, $" - Level {level}")
+                : $"{input} - Level {level}";
             return char.ToUpper(modifiedInput[0]) + modifiedInput.Substring(1).ToLower();
         }
 
