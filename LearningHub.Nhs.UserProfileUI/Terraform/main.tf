@@ -7,7 +7,7 @@ resource "azurerm_service_plan" "UserProfileServicePlan" {
   name                = var.AppServicePlanName
   location            = azurerm_resource_group.UserProfileResourceGroup.location
   resource_group_name = azurerm_resource_group.UserProfileResourceGroup.name
-  sku_name			  = "B1"
+  sku_name			  = "B3"
   os_type			  = "Linux"
 }
 
@@ -23,3 +23,18 @@ resource "azurerm_linux_web_app" "UserProfileLinuxWebApp" {
 	}
   }
 }
+
+/*resource "azurerm_windows_web_app" "UserProfileLinuxWebApp" {
+  name                = var.WebAppName
+  location            = azurerm_resource_group.UserProfileResourceGroup.location
+  resource_group_name = azurerm_resource_group.UserProfileResourceGroup.name
+  service_plan_id     = azurerm_service_plan.UserProfileServicePlan.id
+  site_config {
+    dotnet_version = "v6.0"
+    always_on  = true
+  }
+  app_settings = {
+    "WEBSITE_WEBDEPLOY_USE_SCM" = "false"
+    "WEBSITE_RUN_FROM_PACKAGE" = "1"
+  }
+}*/

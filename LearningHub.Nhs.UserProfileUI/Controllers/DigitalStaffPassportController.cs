@@ -4,10 +4,16 @@
 
 namespace LearningHub.Nhs.UserProfileUI.Controllers
 {
+    using System;
+    using LearningHub.Nhs.Caching;
+    using LearningHub.Nhs.LearningCredentials.Models.Dsp;
+    using LearningHub.Nhs.LearningCredentials.Models.Entities.Dsp;
+    using LearningHub.Nhs.Models.Entities.Hierarchy;
     using LearningHub.Nhs.UserProfileUI.Interfaces;
     using LearningHub.Nhs.UserProfileUI.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
 
     /// <summary>
     /// Defines the <see cref="DigitalStaffPassportController" />.
@@ -17,16 +23,31 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
     {
         private readonly ILogger<DigitalStaffPassportController> logger;
         private readonly IDigitalStaffPassportService digitalStaffPassportService;
+        private readonly IUserService userService;
+        private readonly ICacheService cacheService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DigitalStaffPassportController"/> class.
         /// </summary>
         /// <param name="logger">The logger<see cref="ILogger{HomeController}"/>.</param>
         /// <param name="digitalStaffPassportService">The digital staff passport service<see cref="IDigitalStaffPassportService"/>.</param>
-        public DigitalStaffPassportController(ILogger<DigitalStaffPassportController> logger, IDigitalStaffPassportService digitalStaffPassportService)
+        /// <param name="userService">The user service.</param>
+        /// <param name="cacheService">The cache service.</param>
+        public DigitalStaffPassportController(ILogger<DigitalStaffPassportController> logger, IDigitalStaffPassportService digitalStaffPassportService, IUserService userService, ICacheService cacheService)
         {
             this.logger = logger;
             this.digitalStaffPassportService = digitalStaffPassportService;
+            this.userService = userService;
+            this.cacheService = cacheService;
+        }
+
+        /// <summary>
+        /// The Index.
+        /// </summary>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        public IActionResult Index()
+        {
+            return this.RedirectToAction("Credentials", "DigitalStaffPassport");
         }
 
         /// <summary>
@@ -36,7 +57,13 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         public async Task<IActionResult> Credentials()
         {
             var verifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentials();
-            return this.View(verifiableCredentials);
+            var (cacheExists, result) = await this.cacheService.TryGetAsync<string>(this.DspIdentity);
+            if (cacheExists && !string.IsNullOrWhiteSpace(result))
+            {
+                return this.View(new UserVerifiableCredentialandIdentityResponse { IdentityVerified = true, UserVerifiableCredentialResponse = verifiableCredentials });
+            }
+
+            return this.View(new UserVerifiableCredentialandIdentityResponse { UserVerifiableCredentialResponse = verifiableCredentials });
         }
 
         /// <summary>
@@ -50,27 +77,6 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         }
 
         /// <summary>
-        /// Displays the verifiable credentials.
-        /// </summary>
-        /// <param name="id">Verifiable credential id.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        public async Task<IActionResult> ListUserCredentials(int id)
-        {
-            // TODO - Remove once thisis no longer redirected to
-            var verifiableCredential = await this.digitalStaffPassportService.GetVerifiableCredentialById(id);
-            var userVerifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentialsById(id);
-
-            var model = new UserVerifiableCredentialModel()
-            {
-                Id = verifiableCredential.Id,
-                CredentialName = verifiableCredential.CredentialName,
-                UserVerifiableCredentials = userVerifiableCredentials,
-            };
-
-            return this.View(model);
-        }
-
-        /// <summary>
         /// Displays the user's verifiable credentials.
         /// </summary>
         /// <returns>The <see cref="IActionResult"/>.</returns>
@@ -81,25 +87,34 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         }
 
         /// <summary>
-        /// Displays a single user verifiable credential.
+        /// Displays a resend confirmation screen.
         /// </summary>
-        /// <param name="id">The verifiable credial id.</param>
+        /// <param name="id">The verifiable credential id.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
-        public async Task<IActionResult> Details(int id)
+        public IActionResult ResendConfirmation(int id)
         {
-            var verifiableCredential = await this.digitalStaffPassportService.GetUserVerifiableCredentialById(id);
-            return this.View(verifiableCredential);
+            this.ViewBag.CredentialId = id;
+            return this.View();
         }
 
         /// <summary>
         /// The Send Credential method.
         /// </summary>
-        /// <param name="id">The verifiable credial id.</param>
+        /// <param name="verifiableCredentialId">The verifiable credial id.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
-        public async Task<IActionResult> SendCredential(int id)
+        [HttpPost]
+        public async Task<IActionResult> SendCredential(int verifiableCredentialId)
         {
-            var url = await this.digitalStaffPassportService.GetAuthUrl(id, this.CurrentUserId);
-            return this.Redirect(url);
+            try
+            {
+                var url = await this.digitalStaffPassportService.GetAuthUrl(verifiableCredentialId, this.CurrentUserId);
+                return this.Redirect(url);
+            }
+            catch (Exception ex)
+            {
+                this.ViewBag.Error = ex.Message;
+                return this.View("DspError");
+            }
         }
 
         /// <summary>
@@ -116,14 +131,13 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             if (error != null || error_description != null)
             {
                 this.logger.LogError($"Error: {error}/rDescription: {error_description}");
-                this.ViewBag.Error = $"Error: {error}: {error_description}";
-                return this.View("DspError");
+                this.TempData["Notification"] = $"{error_description}";
+                return this.RedirectToAction("Credentials");
             }
 
             if (code == null)
             {
                 return this.RedirectToAction("Credentials");
-                ////return this.RedirectToAction("ListCredentials");
             }
 
             if (state == "credentialCreation")
@@ -132,27 +146,12 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             }
             else if (state == "verifyCreation")
             {
-                var claims = await this.digitalStaffPassportService.GetCredentialDetails(code);
-                return this.View("ShowCredentialClaims", claims);
+                return await this.PersistIdentityVerification(code);
             }
             else
             {
                 return this.View("Error");
             }
-        }
-
-        /// <summary>
-        /// Revokes a credential.
-        /// </summary>
-        /// <param name="id">The User Verifiable Credential id.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        [HttpGet]
-        public async Task<IActionResult> Revoke(int id)
-        {
-            await this.digitalStaffPassportService.RevokeUserVerifiableCredentials(id);
-
-            // TODO - return to main summary page after testing is complete
-            return this.RedirectToAction("ListUserCredentials", new { id = id });
         }
 
         /// <summary>
@@ -164,6 +163,17 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         {
             var credentialTypeList = await this.digitalStaffPassportService.GetVerifiableCredentials();
             return this.View(credentialTypeList.Select(c => c.ScopeName));
+        }
+
+        /// <summary>
+        /// Display the page on the gateway to verify identity.
+        /// </summary>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        [HttpGet]
+        public IActionResult VerifyIdentity()
+        {
+            var url = this.digitalStaffPassportService.GetVerifyCredentialUrl("Identity");
+            return this.Redirect(url);
         }
 
         /// <summary>
@@ -181,9 +191,48 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
         private async Task<IActionResult> RequestToken(string code)
         {
             var userVerifiableCredential = await this.digitalStaffPassportService.ProcessTokenResponse(code, this.CurrentUserId);
+            if (userVerifiableCredential != null && userVerifiableCredential.UserVerifiableCredentialId > 0)
+            {
+                var userVerifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentialsById(userVerifiableCredential.VerifiableCredentialId);
+                if (userVerifiableCredentials != null)
+                {
+                    string message = userVerifiableCredentials.Count() > 1
+                        ? "Credential readded to wallet"
+                        : "Credential added to wallet";
 
-            // TODO - return to main summary page after testing is complete
-            return this.RedirectToAction("ListUserCredentials", new { id = userVerifiableCredential.VerifiableCredentialId });
+                    this.TempData["Notification"] = $"Success: {message}";
+                }
+            }
+
+            return this.RedirectToAction("Credentials");
+        }
+
+        private async Task<IActionResult> PersistIdentityVerification(string code)
+        {
+            var claims = await this.digitalStaffPassportService.GetCredentialDetails(code);
+            if (claims != null && claims.Any())
+            {
+                var firstName = claims.FirstOrDefault(x => x.Type == "Identity.ID-LegalFirstName")?.Value;
+                var lastName = claims.FirstOrDefault(x => x.Type == "Identity.ID-LegalSurname")?.Value;
+
+                var userDetails = await this.userService.GetElfhUserByUserIdAsync(this.CurrentUserId);
+                if (firstName?.ToString().ToUpper() == userDetails.FirstName.ToUpper() &&
+                    lastName?.ToString().ToUpper() == userDetails.LastName.ToUpper())
+                {
+                    var uniqueIdentifier = claims.FirstOrDefault(x => x.Type == "Identity.UniqueIdentifier");
+                    if (uniqueIdentifier != null)
+                    {
+                        await this.cacheService.SetAsync(this.DspIdentity, uniqueIdentifier.Value);
+                        this.TempData["Notification"] = "Success: Identity verified";
+                    }
+                }
+                else
+                {
+                    this.TempData["Notification"] = "Identity verification failed";
+                }
+            }
+
+            return this.RedirectToAction("Credentials");
         }
     }
 }
