@@ -208,9 +208,9 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             if (userVerifiableCredential != null && userVerifiableCredential.UserVerifiableCredentialId > 0)
             {
                 var userVerifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentialsById(userVerifiableCredential.VerifiableCredentialId);
-                if (userVerifiableCredentials != null)
+                if (userVerifiableCredentials != null && userVerifiableCredentials.Any())
                 {
-                    var credentialNameWithLevel = this.UpdateCredentialNameWithLevel(userVerifiableCredential.CredentialName, userVerifiableCredential.Level);
+                    var credentialNameWithLevel = this.UpdateCredentialNameWithLevel(userVerifiableCredentials.First().CredentialName, userVerifiableCredentials.First().Level);
                     string message = userVerifiableCredentials.Count() > 1
                         ? $"{credentialNameWithLevel} credential readded to wallet"
                         : $"{credentialNameWithLevel} credential added to wallet";
