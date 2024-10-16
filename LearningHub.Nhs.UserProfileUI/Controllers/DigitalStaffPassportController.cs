@@ -131,7 +131,11 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             if (error != null || error_description != null)
             {
                 this.logger.LogError($"Error: {error}/rDescription: {error_description}");
-                this.TempData["Notification"] = $"{error_description}";
+                if (!string.IsNullOrWhiteSpace(error_description) && !error_description.ToLower().Contains("user cancelled"))
+                {
+                    this.TempData["Notification"] = $"{error_description}";
+                }
+
                 return this.RedirectToAction("Credentials");
             }
 
