@@ -188,17 +188,33 @@ namespace LearningHub.Nhs.UserProfileUI.Controllers
             return this.Redirect(url);
         }
 
+        private string UpdateCredentialNameWithLevel(string input, int level)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return string.Empty;
+            }
+
+            int dashIndex = input.IndexOf('-');
+            string modifiedInput = dashIndex >= 0
+                ? input.Insert(dashIndex, $" - Level {level}")
+                : $"{input} - Level {level}";
+            return char.ToUpper(modifiedInput[0]) + modifiedInput.Substring(1).ToLower();
+        }
+
         private async Task<IActionResult> RequestToken(string code)
         {
             var userVerifiableCredential = await this.digitalStaffPassportService.ProcessTokenResponse(code, this.CurrentUserId);
             if (userVerifiableCredential != null && userVerifiableCredential.UserVerifiableCredentialId > 0)
             {
                 var userVerifiableCredentials = await this.digitalStaffPassportService.GetCurrentUserVerifiableCredentialsById(userVerifiableCredential.VerifiableCredentialId);
-                if (userVerifiableCredentials != null)
+                if (userVerifiableCredentials != null && userVerifiableCredentials.Any())
                 {
+                    var verifiableCredential = await this.digitalStaffPassportService.GetVerifiableCredentialById(userVerifiableCredential.VerifiableCredentialId);
+                    var credentialNameWithLevel = this.UpdateCredentialNameWithLevel(verifiableCredential.CredentialName, verifiableCredential.Level);
                     string message = userVerifiableCredentials.Count() > 1
-                        ? "Credential readded to wallet"
-                        : "Credential added to wallet";
+                        ? $"{credentialNameWithLevel} credential readded to wallet"
+                        : $"{credentialNameWithLevel} credential added to wallet";
 
                     this.TempData["Notification"] = $"Success: {message}";
                 }
