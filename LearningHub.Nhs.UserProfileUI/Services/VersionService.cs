@@ -5,6 +5,7 @@
 namespace LearningHub.Nhs.UserProfileUI.Services
 {
     using LearningHub.Nhs.UserProfileUI.Interfaces;
+    using System;
 
     /// <summary>
     /// Defines the <see cref="VersionService" />.
@@ -17,7 +18,8 @@ namespace LearningHub.Nhs.UserProfileUI.Services
         /// <returns>The <see cref="string"/>.</returns>
         public string GetVersion()
         {
-            return typeof(Program).Assembly.GetName().Version?.ToString() ?? "1.0.0";
+            var version = typeof(Program).Assembly.GetName().Version;
+            return $"{version?.Major}.{version?.Minor}.{version?.Build}";
         }
     }
 }
