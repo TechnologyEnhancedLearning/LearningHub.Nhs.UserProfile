@@ -75,7 +75,7 @@ namespace LearningHub.Nhs.UserProfileUI
 
             services.Configure<WebSettings>(configuration.GetSection("WebSettings"));
             services.AddSingleton(configuration);
-
+            services.AddSingleton<VersionService>();
             services.AddScoped<IUserService, UserProfileService>();
             services.AddTransient<IUserSessionHelper, UserSessionHelper>();
             services.AddScoped<IDigitalStaffPassportService, DigitalStaffPassportService>();
@@ -161,7 +161,8 @@ namespace LearningHub.Nhs.UserProfileUI
                     options.Scope.Add("profile");
                     options.Scope.Add("userapi");
                     options.Scope.Add("learningcredentialsapi");
-                    options.Scope.Add("learninghubapi");
+
+                   // options.Scope.Add("learninghubapi");
                     options.Scope.Add("offline_access"); // Enables refresh token even though Auth Service session has expired
                     options.Scope.Add("roles");
 
