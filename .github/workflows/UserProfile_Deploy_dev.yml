@@ -31,29 +31,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_wrapper: false  # Skip wrapper script installation
-
-      - name: 'Terraform init'
-        id: init
-        run: |
-          cd LearningHub.Nhs.UserProfileUI/Terraform
-          terraform init "-backend-config=backend-dev.tfvars"
-
-      # - name: 'Terraform destroy'
-      #   id: destroy
-      #   run: |
-      #     cd LearningHub.Nhs.UserProfileUI/Terraform
-      #     terraform destroy -auto-approve -var="ResourceGroupName=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -var="ResourceGroupLocation=${{ vars.AZURE_RESOURCE_GROUP_LOCATION}}" -var="WebAppName=${{ vars.AZURE_WEB_APP_NAME }}" -var="AppServicePlanName=${{ vars.AZURE_WEB_APP_SERVICE_PLAN_NAME }}"
-
-      - name: 'Terraform apply'
-        id: apply
-        run: |
-          cd LearningHub.Nhs.UserProfileUI/Terraform
-          terraform apply -auto-approve -var="ResourceGroupName=${{ vars.AZURE_RESOURCE_GROUP_NAME }}" -var="ResourceGroupLocation=${{ vars.AZURE_RESOURCE_GROUP_LOCATION }}" -var="WebAppName=${{ vars.AZURE_WEB_APP_NAME }}" -var="AppServicePlanName=${{ vars.AZURE_WEB_APP_SERVICE_PLAN_NAME }}"
-
+   
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
@@ -103,13 +81,6 @@ jobs:
         run: |
           dotnet restore
           dotnet build --configuration Release
-          dotnet publish -c Release -o ./myapp
-
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
-        uses: azure/webapps-deploy@v2
-        with: 
-          app-name: ${{ vars.AZURE_WEB_APP_NAME }}
-          package: ./myapp
 
       - name: logout
         run: |
