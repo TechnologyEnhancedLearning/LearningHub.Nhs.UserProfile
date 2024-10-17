@@ -4,9 +4,6 @@
 
 namespace LearningHub.Nhs.UserProfileUI.Services
 {
-    using LearningHub.Nhs.UserProfileUI.Interfaces;
-    using System;
-
     /// <summary>
     /// Defines the <see cref="VersionService" />.
     /// </summary>
