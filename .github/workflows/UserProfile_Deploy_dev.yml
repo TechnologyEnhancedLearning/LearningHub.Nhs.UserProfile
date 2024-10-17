@@ -65,6 +65,7 @@ jobs:
           
       - name: Extract version from tag
         id: vars
+        shell: bash 
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           TAG=$(git describe --tags --abbrev=0)
