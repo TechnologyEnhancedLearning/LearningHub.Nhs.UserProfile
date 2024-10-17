@@ -24,13 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: 'Az CLI login'
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
    
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -40,27 +33,11 @@ jobs:
       - name: Add Nuget source
         run: dotnet nuget add source 'https://pkgs.dev.azure.com/e-LfH/_packaging/LearningHubFeed/nuget/v3/index.json' --name 'LearningHubFeed'  --username 'colin.beeby' --password ${{ secrets.AZURE_DEVOPS_PAT }} --store-password-in-clear-text      
       
+      - name: Print working directory
+        run: pwd
 
-      - name: Perform variable substitution
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: '**/appsettings.json'
-        env:
-          Environment: 'Development'
-          ConnectionStrings.NLogDb: ${{ secrets.NLOG_DB }}
-          ConnectionStrings.LearningHubRedis: ${{ secrets.LEARNING_HUB_REDIS }}
-          WebSettings.BuildNumber: ${{ vars.WEB_SETTINGS_BUILD_NUMBER }}
-          WebSettings.UserProfileUrl: ${{ vars.WEB_SETTINGS_USER_PROFILE_URL }}
-          WebSettings.LearningCredentialsApiUrl: ${{ vars.WEB_SETTINGS_LEARNING_CREDENTIALS_API_URL }}
-          WebSettings.UserApiUrl: ${{ vars.WEB_SETTINGS_USER_API_URL }}
-          WebSettings.AuthenticationServiceUrl: ${{ vars.AUTH_SERVICE_URL }}
-          WebSettings.AuthClientSecret: ${{ secrets.WEB_SETTINGS_AUTH_CLIENT_SECRET }}
-          WebSettings.AuthClientId: ${{ vars.WEB_SETTINGS_AUTH_CLIENT_ID }}
-          WebSettings.DspSettings.HEEOrgIdentifier: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_HEE_ORG_IDENTIFIER }}
-          WebSettings.DspSettings.DspGatewayUrl: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_DSP_GATEWAY_URL }}
-          WebSettings.DspSettings.ClientId: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_CLIENT_ID }}
-          WebSettings.DspSettings.ClientSecret: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_CLIENT_SECRET }}
-          WebSettings.DspSettings.SigningKey: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_SIGNING_KEY }}
+      - name: List files
+        run: ls -la
           
           
       - name: Extract version from tag
@@ -83,6 +60,3 @@ jobs:
           dotnet restore
           dotnet build --configuration Release
 
-      - name: logout
-        run: |
-          az logout
