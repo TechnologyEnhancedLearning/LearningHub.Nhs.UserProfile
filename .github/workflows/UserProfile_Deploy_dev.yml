@@ -83,6 +83,22 @@ jobs:
           WebSettings.DspSettings.ClientId: ${{ vars.WEB_SETTINGS_DSP_SETTINGS_CLIENT_ID }}
           WebSettings.DspSettings.ClientSecret: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_CLIENT_SECRET }}
           WebSettings.DspSettings.SigningKey: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_SIGNING_KEY }}
+                   
+      - name: Extract version from tag
+        id: vars
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          $TAG = git describe --tags --abbrev=0
+          $VERSION = $TAG -replace '^v', ''
+          echo "VERSION=$VERSION" >> $env:GITHUB_ENV
+
+      - name: Update assembly version in .csproj
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          (Get-Content **/LearningHub.Nhs.UserProfileUI.csproj) -replace '<AssemblyVersion>.*</AssemblyVersion>', "<AssemblyVersion>${{ env.VERSION }}</AssemblyVersion>" | Set-Content **/LearningHub.Nhs.UserProfileUI.csproj
+          (Get-Content **/LearningHub.Nhs.UserProfileUI.csproj) -replace '<FileVersion>.*</FileVersion>', "<FileVersion>${{ env.VERSION }}</FileVersion>" | Set-Content **/LearningHub.Nhs.UserProfileUI.csproj
+          (Get-Content **/LearningHub.Nhs.UserProfileUI.csproj) -replace '<Version>.*</Version>', "<Version>${{ env.VERSION }}</Version>" | Set-Content **/LearningHub.Nhs.UserProfileUI.csproj
+         
 
       - name: dotnet build and publish
         run: |
