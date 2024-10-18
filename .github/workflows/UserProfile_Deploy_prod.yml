@@ -84,7 +84,7 @@ jobs:
           WebSettings.DspSettings.ClientSecret: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_CLIENT_SECRET }}
           WebSettings.DspSettings.SigningKey: ${{ secrets.WEB_SETTINGS_DSP_SETTINGS_SIGNING_KEY }}
 
-     - name: Extract version from tag
+      - name: Extract version from tag
         id: vars
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
