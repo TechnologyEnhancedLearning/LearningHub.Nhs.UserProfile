@@ -161,8 +161,7 @@ namespace LearningHub.Nhs.UserProfileUI
                     options.Scope.Add("profile");
                     options.Scope.Add("userapi");
                     options.Scope.Add("learningcredentialsapi");
-
-                   // options.Scope.Add("learninghubapi");
+                    options.Scope.Add("learninghubapi");
                     options.Scope.Add("offline_access"); // Enables refresh token even though Auth Service session has expired
                     options.Scope.Add("roles");
 
